@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: gateway
+  reactor:
+    context-propagation: auto
   codec:
     max-in-memory-size: 1MB
 

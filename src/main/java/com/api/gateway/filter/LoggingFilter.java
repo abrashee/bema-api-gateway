@@ -5,6 +5,9 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.Ordered;
@@ -21,6 +24,12 @@ public class LoggingFilter implements GlobalFilter, Ordered {
     private static final Logger log = LoggerFactory.getLogger(LoggingFilter.class);
     private static final Pattern VALID_CORRELATION_ID =
             Pattern.compile("^[A-Za-z0-9._:-]{1,128}$");
+
+    private final Tracer tracer;
+
+    public LoggingFilter(Tracer tracer) {
+        this.tracer = tracer;
+    }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -42,14 +51,34 @@ public class LoggingFilter implements GlobalFilter, Ordered {
             return Mono.empty();
         });
 
-        log.info(
-                "Incoming request method={} path={} correlationId={}",
-                exchange.getRequest().getMethod(),
-                exchange.getRequest().getPath().value(),
-                correlationId
-        );
+        return chain.filter(correlatedExchange)
+                .doOnSubscribe(ignored -> logRequest(exchange, correlationId));
+    }
 
-        return chain.filter(correlatedExchange);
+    private void logRequest(
+            ServerWebExchange exchange,
+            String correlationId
+    ) {
+        Span span = tracer.currentSpan();
+
+        try {
+            if (span != null) {
+                MDC.put("traceId", span.context().traceId());
+                MDC.put("spanId", span.context().spanId());
+            }
+
+            MDC.put("correlationId", correlationId);
+
+            log.info(
+                    "Incoming request method={} path={}",
+                    exchange.getRequest().getMethod(),
+                    exchange.getRequest().getPath().value()
+            );
+        } finally {
+            MDC.remove("traceId");
+            MDC.remove("spanId");
+            MDC.remove("correlationId");
+        }
     }
 
     private String resolveCorrelationId(String suppliedCorrelationId) {
@@ -63,6 +92,6 @@ public class LoggingFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE;
+        return Ordered.HIGHEST_PRECEDENCE + 2;
     }
 }
