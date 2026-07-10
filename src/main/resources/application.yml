@@ -67,6 +67,10 @@ spring:
                 - Path=/socket.io/**
 
 logging:
+  level:
+    root: INFO
+    org.springframework.security: WARN
+    reactor.netty: WARN
   structured:
     format:
       console: logstash
