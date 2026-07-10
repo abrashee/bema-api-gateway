@@ -73,3 +73,12 @@ management:
   endpoint:
     health:
       show-details: never
+
+  otlp:
+    tracing:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://otel-collector:4318/v1/traces}
+
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
