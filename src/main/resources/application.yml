@@ -64,6 +64,11 @@ spring:
               predicates:
                 - Path=/socket.io/**
 
+logging:
+  structured:
+    format:
+      console: logstash
+
 management:
   endpoints:
     web:
