@@ -52,6 +52,39 @@ class GlobalGatewayExceptionHandlerTest {
     }
 
     @Test
+    void preservesNotFoundStatusAndReason() {
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.get("/missing-route").build()
+        );
+
+        StepVerifier.create(
+                handler.handle(
+                        exchange,
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Route not found"
+                        )
+                )
+        ).verifyComplete();
+
+        assertThat(exchange.getResponse().getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
+
+        String body = exchange.getResponse()
+                .getBody()
+                .map(buffer -> StandardCharsets.UTF_8.decode(
+                        buffer.asByteBuffer()
+                ).toString())
+                .blockFirst();
+
+        assertThat(body).isEqualTo(
+                "{\"statusCode\":404,"
+                        + "\"message\":\"Route not found\","
+                        + "\"data\":null}"
+        );
+    }
+
+    @Test
     void preservesIntentionalClientErrorStatusAndReason() {
         MockServerWebExchange exchange = MockServerWebExchange.from(
                 MockServerHttpRequest.get("/api/test").build()
