@@ -9,6 +9,12 @@ spring:
   codec:
     max-in-memory-size: 1MB
 
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
+
   cloud:
     gateway:
       server:
@@ -93,3 +99,8 @@ management:
     enabled: true
     sampling:
       probability: 1.0
+
+security:
+  login-rate-limit:
+    max-requests: ${LOGIN_RATE_LIMIT_MAX_REQUESTS:10}
+    window-ms: ${LOGIN_RATE_LIMIT_WINDOW_MS:60000}
