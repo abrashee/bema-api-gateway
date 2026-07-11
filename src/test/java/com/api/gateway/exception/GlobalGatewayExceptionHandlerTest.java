@@ -85,6 +85,39 @@ class GlobalGatewayExceptionHandlerTest {
     }
 
     @Test
+    void preservesMethodNotAllowedStatusAndReason() {
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.patch("/api/test").build()
+        );
+
+        StepVerifier.create(
+                handler.handle(
+                        exchange,
+                        new ResponseStatusException(
+                                HttpStatus.METHOD_NOT_ALLOWED,
+                                "Method not allowed"
+                        )
+                )
+        ).verifyComplete();
+
+        assertThat(exchange.getResponse().getStatusCode())
+                .isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
+
+        String body = exchange.getResponse()
+                .getBody()
+                .map(buffer -> StandardCharsets.UTF_8.decode(
+                        buffer.asByteBuffer()
+                ).toString())
+                .blockFirst();
+
+        assertThat(body).isEqualTo(
+                "{\"statusCode\":405,"
+                        + "\"message\":\"Method not allowed\","
+                        + "\"data\":null}"
+        );
+    }
+
+    @Test
     void preservesIntentionalClientErrorStatusAndReason() {
         MockServerWebExchange exchange = MockServerWebExchange.from(
                 MockServerHttpRequest.get("/api/test").build()
