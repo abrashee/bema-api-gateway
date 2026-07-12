@@ -108,3 +108,7 @@ security:
   login-rate-limit:
     max-requests: ${LOGIN_RATE_LIMIT_MAX_REQUESTS:10}
     window-ms: ${LOGIN_RATE_LIMIT_WINDOW_MS:60000}
+
+  gateway-rate-limit:
+    max-requests: ${GATEWAY_RATE_LIMIT_MAX_REQUESTS:300}
+    window-ms: ${GATEWAY_RATE_LIMIT_WINDOW_MS:60000}
