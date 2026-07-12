@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.14</version>
+        <version>3.5.15</version>
         <relativePath/>
     </parent>
 
@@ -20,6 +20,7 @@
     <properties>
         <java.version>21</java.version>
         <spring-cloud.version>2025.0.2</spring-cloud.version>
+        <jackson-bom.version>2.21.5</jackson-bom.version>
     </properties>
 
     <dependencyManagement>
@@ -120,6 +121,22 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>12.2.2</version>
+                <configuration>
+                    <suppressionFiles>
+                        <suppressionFile>owasp-suppressions.xml</suppressionFile>
+                    </suppressionFiles>
+                    <failBuildOnCVSS>7.0</failBuildOnCVSS>
+                    <formats>
+                        <format>HTML</format>
+                        <format>JSON</format>
+                    </formats>
+                    <nvdApiKeyEnvironmentVariable>NVD_API_KEY</nvdApiKeyEnvironmentVariable>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

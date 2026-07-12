@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+    <!--
+      OpenTelemetry-Go CVEs incorrectly matched to the Java semconv artifact.
+      The affected product is the Go implementation, not OpenTelemetry Java.
+    -->
+    <suppress>
+        <notes><![CDATA[
+        False positive: these CVEs affect OpenTelemetry-Go. This dependency is
+        io.opentelemetry.semconv:opentelemetry-semconv for Java.
+        ]]></notes>
+        <packageUrl regex="true">
+            ^pkg:maven/io\.opentelemetry\.semconv/opentelemetry-semconv@.*$
+        </packageUrl>
+        <cve>CVE-2026-39883</cve>
+        <cve>CVE-2026-24051</cve>
+        <cve>CVE-2026-39882</cve>
+        <cve>CVE-2026-41178</cve>
+    </suppress>
+
+    <!--
+      Log4j findings incorrectly matched to log4j-api.
+      CVE-2026-34477 affects log4j-core network appenders.
+      CVE-2026-34479 affects the deprecated Log4j 1-to-2 bridge.
+      Neither vulnerable artifact is present in this service.
+    -->
+    <suppress>
+        <notes><![CDATA[
+        False positive: only log4j-api is present through log4j-to-slf4j.
+        log4j-core and log4j-1.2-api are absent.
+        ]]></notes>
+        <packageUrl regex="true">
+            ^pkg:maven/org\.apache\.logging\.log4j/(?:log4j-api|log4j-to-slf4j)@.*$
+        </packageUrl>
+        <cve>CVE-2026-34477</cve>
+        <cve>CVE-2026-34479</cve>
+    </suppress>
+
+    <!--
+      CVE-2020-29582 affected Kotlin versions before 1.4.21.
+      The resolved runtime library is 1.9.25.
+    -->
+    <suppress>
+        <notes><![CDATA[
+        False positive: CVE-2020-29582 affects Kotlin before 1.4.21.
+        The resolved kotlin-stdlib version is 1.9.25.
+        ]]></notes>
+        <packageUrl regex="true">
+            ^pkg:maven/org\.jetbrains\.kotlin/kotlin-stdlib(?:-[A-Za-z0-9._-]+)?@1\.9\.25$
+        </packageUrl>
+        <cve>CVE-2020-29582</cve>
+    </suppress>
+
+    <!--
+      CVE-2026-53914 affects Kotlin build-cache metadata processing.
+      Bema is a Java/Maven service and does not use the Kotlin build cache.
+      kotlin-stdlib is present only as an OkHttp runtime dependency.
+    -->
+    <suppress>
+        <notes><![CDATA[
+        Not applicable: this CVE concerns unsafe deserialization of Kotlin
+        build-cache metadata. This Java/Maven service does not use the Kotlin
+        compiler or Kotlin build cache; kotlin-stdlib is runtime-only via OkHttp.
+        ]]></notes>
+        <packageUrl regex="true">
+            ^pkg:maven/org\.jetbrains\.kotlin/kotlin-stdlib(?:-[A-Za-z0-9._-]+)?@1\.9\.25$
+        </packageUrl>
+        <cve>CVE-2026-53914</cve>
+    </suppress>
+
+</suppressions>
