@@ -11,6 +11,8 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -21,6 +23,9 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class LoginRateLimitFilter implements GlobalFilter, Ordered {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(LoginRateLimitFilter.class);
 
     private static final String LOGIN_PATH = "/api/auth/login";
     private static final String KEY_PREFIX = "rate-limit:login:";
@@ -86,6 +91,15 @@ public class LoginRateLimitFilter implements GlobalFilter, Ordered {
                     if (count <= maxRequests) {
                         return chain.filter(exchange);
                     }
+
+                    log.warn(
+                            "security_audit event=AUTH_LOGIN_RATE_LIMIT "
+                                    + "outcome=DENIED clientAddress={} "
+                                    + "requestCount={} maxRequests={}",
+                            resolveClientAddress(exchange),
+                            count,
+                            maxRequests
+                    );
 
                     return reject(exchange);
                 });

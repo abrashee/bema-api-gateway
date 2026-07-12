@@ -15,6 +15,7 @@ import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -71,6 +72,15 @@ class LoginRateLimitFilterTest {
                 exchange.getResponse()
                         .getHeaders()
                         .getFirst("Retry-After")
+        );
+
+        String body = exchange.getResponse()
+                .getBodyAsString()
+                .block();
+
+        assertTrue(
+                body != null
+                        && body.contains("Too many login requests")
         );
     }
 
