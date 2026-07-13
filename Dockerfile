@@ -6,11 +6,17 @@ COPY . .
 
 RUN mvn clean package -DskipTests
 
+
 FROM eclipse-temurin:21-jdk
+
+RUN groupadd --system --gid 10001 bema \
+    && useradd --system --uid 10001 --gid bema --home-dir /app --shell /usr/sbin/nologin bema
 
 WORKDIR /app
 
-COPY --from=build /app/target/gateway-0.0.1-SNAPSHOT.jar app.jar
+COPY --chown=bema:bema --from=build /app/target/gateway-0.0.1-SNAPSHOT.jar app.jar
+
+USER bema
 
 EXPOSE 8080
 
