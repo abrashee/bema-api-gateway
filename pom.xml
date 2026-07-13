@@ -17,6 +17,14 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>gateway</name>
 
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://spdx.org/licenses/MIT.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <properties>
         <java.version>21</java.version>
         <spring-cloud.version>2025.0.2</spring-cloud.version>
