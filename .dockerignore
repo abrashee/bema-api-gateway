@@ -1,0 +1,27 @@
+# Build outputs
+target
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Version control and editor metadata
+.git
+.gitignore
+.DS_Store
+.idea
+.vscode
+
+# Maven wrapper and local metadata not required by this Dockerfile
+.mvn
+mvnw
+mvnw.cmd
+
+# Reports, documentation, and development-only files
+dependency-check-report.*
+owasp-suppressions.xml
+README.md
+LICENSE
+HELP.md
+*.log
