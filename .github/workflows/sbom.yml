@@ -1,0 +1,29 @@
+name: Container SBOM
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+    paths:
+      - Dockerfile
+      - package.json
+      - package-lock.json
+      - pom.xml
+      - src/**
+      - prisma/**
+      - .github/workflows/sbom.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sbom:
+    name: Generate gateway SBOM
+    uses: abrashee/bema-infrastructure/.github/workflows/reusable-container-sbom.yml@dev
+    with:
+      repository: abrashee/bema-api-gateway
+      ref: ${{ github.sha }}
+      image-name: bema-api-gateway
+      artifact-name: gateway
